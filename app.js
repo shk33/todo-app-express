@@ -58,9 +58,11 @@ app.param('task_id', function(req, res, next, taskId) {
 
 app.get('/', routes.index);
 app.get('/tasks', tasks.list);
-app.post('/tasks', tasks.markAllCompleted);
+
+app.post('/tasks/mark-all-completed', tasks.markAllCompleted);
 app.post('/tasks', tasks.add);
 app.post('/tasks/:task_id', tasks.markCompleted);
+
 app.delete('/tasks/:task_id', tasks.del);
 app.get('/tasks/completed', tasks.completed);
 

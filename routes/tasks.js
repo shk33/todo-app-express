@@ -29,8 +29,8 @@ exports.add = function (req, res, next) {
 
 exports.markAllCompleted = function (req, res, next) {
   if (!req.body.all_done || 
-      req.body.all_done !== true) {
-    return next();
+      req.body.all_done !== 'true') {
+    return next(new Error('No data valid provided'));
   }
   req.db.tasks.update({
     completed: false
