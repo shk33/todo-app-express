@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  .menu
+    h2 Menu
+    ul.nav.nav-pills
+      li.active
+        a(href='/') Home
+      li
+        a(href='/tasks') TODO List
+      li
+        a(href='/tasks/completed') Completed
+  .home
+    p This is an example CRUD web app with Express.js and mongoskin
