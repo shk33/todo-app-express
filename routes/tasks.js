@@ -26,3 +26,19 @@ exports.add = function (req, res, next) {
     res.redirect('/tasks');
   });
 };
+
+exports.markAllCompleted = function (req, res, next) {
+  if (!req.body.all_done || 
+      req.body.all_done !== true) {
+    return next();
+  }
+  req.db.tasks.update({
+    completed: false
+  }, { $set: {
+    completed: true
+  }}, {multi: true}, function (err, count) {
+    if (err) return next(err);
+    console.info('Marked %s task(s) completed.', count);
+    res.redirect('/tasks');
+  });
+};
