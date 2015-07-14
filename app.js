@@ -45,3 +45,12 @@ app.use(function (req, res, next) {
   res.locals._csrf = req.csrfToken();
 });
 
+app.param('task_id', function (req, res, next, taskId) {
+  req.db.tasks.findById(taskId, function (err, task) {
+    if (err) return next(err);
+    if (!task) return next(new Error('Task is not found'));
+    
+    req.task = task;
+    return next();
+  });
+});
