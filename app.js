@@ -38,3 +38,10 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }));
+app.use(csrf());
+app.use(require('less-middleware')(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(function (req, res, next) {
+  res.locals._csrf = req.csrfToken();
+});
+
