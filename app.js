@@ -17,13 +17,24 @@ var favicon = require('favicon'),
   csrf = require('csurf'),
   errorHandler = require('errorhandler');
 
+app.locals.appname = 'Express.js TODO App';
+app.set('port', process.env.PORT || 3000);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
+
 app.use(function (req, res, next) {
   req.db = {};
   req.db.tasks = db.collection('tasks');
   next();
 });
-
-app.locals.appname = 'Express.js TODO App';
-app.set('port', process.env.PORT || 3000);
-app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
+app.use(favicon(path.join('public','favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(methodOverride());
+app.use(cookieParser('CEAF3FA4-F385-49AA-8FE4-54766A9874F1'));
+app.use(session({
+  secret: '59B93087-78BC-4EB9-993A-A61FC844F6C9',
+  resave: true,
+  saveUninitialized: true
+}));
