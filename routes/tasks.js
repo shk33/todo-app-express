@@ -42,3 +42,14 @@ exports.markAllCompleted = function (req, res, next) {
     res.redirect('/tasks');
   });
 };
+
+exports.completed = function (req, res, next) {
+  req.db.tasks.find({
+    completed: true
+  }).toArray(function (err, tasks) {
+    res.render('tasks_completed', {
+      title: 'Completed',
+      tasks: tasks || []
+    });
+  });
+};
