@@ -2,7 +2,7 @@
   "name": "todo-mvc-app",
   "version": "1.0.0",
   "description": "A classic TODO app in express.js for learning porpuses",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "none"
   },
