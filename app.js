@@ -49,8 +49,22 @@ app.param('task_id', function (req, res, next, taskId) {
   req.db.tasks.findById(taskId, function (err, task) {
     if (err) return next(err);
     if (!task) return next(new Error('Task is not found'));
-    
+
     req.task = task;
     return next();
   });
 });
+
+app.get('/', routes.index);
+app.get('/tasks', tasks.list);
+app.post('/tasks', tasks.add);
+app.post('/tasks/:task_id', tasks.markCompleted);
+app.del('/tasks/:task_id', tasks.del);
+app.get('/tasks/completed', tasks.completed);
+app.all('*', function (req, res) {
+  res.status('404').send();
+});
+
+if ('development' == app.get('env')) {
+  app.use(errorhandler());
+}
