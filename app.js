@@ -4,11 +4,10 @@ var tasks = require('./routes/tasks');
 var http = require('http');
 var path = require('path');
 var mongoskin = require('mongoskin');
-
 var db = mongoskin.db('mongodb://localhost:27017/todo?auto_reconnect', {safe:true});
 var app = express();
 
-var favicon = require('favicon'),
+var favicon = require('serve-favicon'),
   logger = require('morgan'),
   bodyParser = require('body-parser'),
   methodOverride = require('method-override'),
@@ -17,16 +16,17 @@ var favicon = require('favicon'),
   csrf = require('csurf'),
   errorHandler = require('errorhandler');
 
-app.locals.appname = 'Express.js TODO App';
-app.set('port', process.env.PORT || 3000);
-app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
-
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   req.db = {};
   req.db.tasks = db.collection('tasks');
   next();
 });
+app.locals.appname = 'Express.js Todo App';
+app.locals.moment = require('moment');
+
+app.set('port', process.env.PORT || 3000);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
 app.use(favicon(path.join('public','favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -39,17 +39,18 @@ app.use(session({
   saveUninitialized: true
 }));
 app.use(csrf());
+
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   res.locals._csrf = req.csrfToken();
+  return next();
 });
 
-app.param('task_id', function (req, res, next, taskId) {
-  req.db.tasks.findById(taskId, function (err, task) {
-    if (err) return next(err);
-    if (!task) return next(new Error('Task is not found'));
-
+app.param('task_id', function(req, res, next, taskId) {
+  req.db.tasks.findById(taskId, function(error, task){
+    if (error) return next(error);
+    if (!task) return next(new Error('Task is not found.'));
     req.task = task;
     return next();
   });
@@ -63,14 +64,13 @@ app.post('/tasks/:task_id', tasks.markCompleted);
 app.delete('/tasks/:task_id', tasks.del);
 app.get('/tasks/completed', tasks.completed);
 
-app.all('*', function (req, res) {
-  res.status('404').send();
+app.all('*', function(req, res){
+  res.status(404).send();
 });
-
+// development only
 if ('development' == app.get('env')) {
-  app.use(errorhandler());
+  app.use(errorHandler());
 }
-
-http.createServer(app).listen(app.get('port'), function() {
-  console.log('Express server listening on port'+ app.get('port'));
+http.createServer(app).listen(app.get('port'), function(){
+  console.log('Express server listening on port ' + app.get('port'));
 });
